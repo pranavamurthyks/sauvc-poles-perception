@@ -1,7 +1,80 @@
+# import cv2
+# import numpy as np
+
+# VIDEO_PATH = "dataset.mp4"
+
+# def normalize_frame(frame):
+#     b, g, r = cv2.split(frame)
+#     b = cv2.normalize(b, None, 0, 255, cv2.NORM_MINMAX)
+#     g = cv2.normalize(g, None, 0, 255, cv2.NORM_MINMAX)
+#     r = cv2.normalize(r, None, 0, 255, cv2.NORM_MINMAX)
+#     return cv2.merge((b, g, r))
+
+# def mouse_callback(event, x, y, flags, param):
+#     if event == cv2.EVENT_LBUTTONDOWN:
+#         frame_norm, hsv = param
+
+#         b, g, r = frame_norm[y, x]
+#         h, s, v = hsv[y, x]
+
+#         print(f"Clicked pixel at (x={x}, y={y})")
+#         print(f"BGR (normalized) = ({b}, {g}, {r})")
+#         print(f"HSV (normalized) = ({h}, {s}, {v})")
+#         print("-" * 40)
+
+# cap = cv2.VideoCapture(VIDEO_PATH)
+# if not cap.isOpened():
+#     print("Error opening video")
+#     exit()
+
+# cv2.namedWindow("Normalized Frame")
+
+# while True:
+#     ret, frame = cap.read()
+#     if not ret:
+#         break
+
+#     frame_norm = normalize_frame(frame)
+#     hsv = cv2.cvtColor(frame_norm, cv2.COLOR_BGR2HSV)
+
+#     cv2.setMouseCallback(
+#         "Normalized Frame",
+#         mouse_callback,
+#         param=(frame_norm, hsv)
+#     )
+
+#     cv2.imshow("Normalized Frame", frame_norm)
+
+#     key = cv2.waitKey(0) & 0xFF
+#     if key == ord('q'):
+#         break
+
+# cap.release()
+# cv2.destroyAllWindows()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import cv2
 import numpy as np
 
-VIDEO_PATH = "dataset.mp4"
+IMAGE_PATH = "yellow_pole.png"   # change if needed
 
 def normalize_frame(frame):
     b, g, r = cv2.split(frame)
@@ -22,32 +95,27 @@ def mouse_callback(event, x, y, flags, param):
         print(f"HSV (normalized) = ({h}, {s}, {v})")
         print("-" * 40)
 
-cap = cv2.VideoCapture(VIDEO_PATH)
-if not cap.isOpened():
-    print("Error opening video")
+# ---- LOAD IMAGE ----
+frame = cv2.imread(IMAGE_PATH)
+if frame is None:
+    print("Error loading image")
     exit()
 
-cv2.namedWindow("Normalized Frame")
+frame_norm = normalize_frame(frame)
+hsv = cv2.cvtColor(frame_norm, cv2.COLOR_BGR2HSV)
 
+cv2.namedWindow("Normalized Image")
+cv2.setMouseCallback(
+    "Normalized Image",
+    mouse_callback,
+    param=(frame_norm, hsv)
+)
+
+# ---- DISPLAY LOOP ----
 while True:
-    ret, frame = cap.read()
-    if not ret:
-        break
-
-    frame_norm = normalize_frame(frame)
-    hsv = cv2.cvtColor(frame_norm, cv2.COLOR_BGR2HSV)
-
-    cv2.setMouseCallback(
-        "Normalized Frame",
-        mouse_callback,
-        param=(frame_norm, hsv)
-    )
-
-    cv2.imshow("Normalized Frame", frame_norm)
-
-    key = cv2.waitKey(0) & 0xFF
+    cv2.imshow("Normalized Image", frame_norm)
+    key = cv2.waitKey(1) & 0xFF
     if key == ord('q'):
         break
 
-cap.release()
 cv2.destroyAllWindows()
