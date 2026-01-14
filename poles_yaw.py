@@ -8,7 +8,16 @@ def color_correction(frame):
     b = cv2.normalize(b, None, 0, 255, cv2.NORM_MINMAX)
     g = cv2.normalize(g, None, 0, 255, cv2.NORM_MINMAX)
     r = cv2.normalize(r, None, 0, 255, cv2.NORM_MINMAX)
-    return cv2.merge(mv=(b, g, r), dst=None)
+    return cv2.merge((b, g, r))
+
+def apply_clahe(frame):
+    frame_lab = cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
+    l, a, b = cv2.split(frame_lab)
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+    l = clahe.apply(l)
+    frame_lab = cv2.merge((l, a, b))
+    frame_bgr = cv2.cvtColor(frame_lab, cv2.COLOR_LAB2BGR)
+    return frame_bgr
 
 
 VIDEO_PATH = "dataset.mp4"   
@@ -101,9 +110,11 @@ while True:
     # YELLOW MASK
     mask_yellow = cv2.inRange(hsv_frame, LOWER_YELLOW, UPPER_YELLOW)
     kernel_yellow = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 25))
-    # mask_yellow = cv2.dilate(mask_yellow, kernel_yellow, iterations=1)
+    # kernel_yellow_2 = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 50))
+
     mask_yellow = cv2.morphologyEx(mask_yellow, cv2.MORPH_CLOSE, kernel_yellow)
     mask_yellow = cv2.morphologyEx(mask_yellow, cv2.MORPH_CLOSE, kernel_yellow)
+    # mask_yellow = cv2.dilate(mask_yellow, kernel_yellow_2, iterations=1)
     cv2.imshow("Yellow Mask", mask_yellow)
 
     # Finding all the contours of the yellow mask
@@ -143,12 +154,9 @@ while True:
     cv2.imshow("Bounding box", frame_bbox)
 
 
-    key = cv2.waitKey(0) & 0xFF   # wait indefinitely
+    key = cv2.waitKey(0) & 0xFF   
     if key == ord('q'):
         break
-
-    # if cv2.waitKey(20) & 0xFF == ord('q'):
-    #     break
 
 
 capture.release()

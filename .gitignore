@@ -1,5 +1,11 @@
 dataset_2.mov
 yellow_pole.png
+yellow_pole_2.png
+yellow_pole_3.jpg
 output_with_bbox.mp4
-xyz.py
+
+sauvc_test_hsv.py
+sauvc_test_lab.py
+poles_yaw_lab.py
+
 .DS_Store
