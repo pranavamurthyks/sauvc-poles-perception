@@ -53,10 +53,13 @@ while True:
     frame_normalized = color_correction(frame)
     cv2.imshow("Frame after color correction", frame_normalized)
 
-    # Applying median blur to reduce noise
-    frame_normalized_blur = cv2.medianBlur(frame_normalized, 3)
+    frame_normalized_clahe = apply_clahe(frame_normalized)
+    cv2.imshow("Frame after color correction and CLAHE", frame_normalized_clahe)
 
-    hsv_frame = cv2.cvtColor(frame_normalized_blur, cv2.COLOR_BGR2HSV)
+    # Applying median blur to reduce noise
+    frame_normalized_clahe_blur = cv2.medianBlur(frame_normalized_clahe, 3)
+
+    hsv_frame = cv2.cvtColor(frame_normalized_clahe_blur, cv2.COLOR_BGR2HSV)
 
 
     # RED MASK
@@ -72,7 +75,7 @@ while True:
     # Finding all the contours of the red mask
     contours_red, _ = cv2.findContours(mask_red, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     x_red, y_red, w_red, h_red = 0, 0, 0, 0
-    frame_bbox = frame_normalized_blur.copy()
+    frame_bbox = frame_normalized_clahe_blur.copy()
     img_h, img_w = frame_bbox.shape[:2]
     pole_candidates_red = []
 
