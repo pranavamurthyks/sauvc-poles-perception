@@ -34,6 +34,17 @@ UPPER_RED_2 = np.array([180, 255, 255])
 LOWER_YELLOW = np.array([17, 100, 100])
 UPPER_YELLOW = np.array([45, 255, 255])
 
+# SAUVC POOL
+
+# LOWER_RED_1 = np.array([0, 100, 30])
+# UPPER_RED_1 = np.array([10, 255, 255])
+
+# LOWER_RED_2 = np.array([140, 100, 30])
+# UPPER_RED_2 = np.array([180, 255, 255])
+
+# LOWER_YELLOW = np.array([17, 40, 40])    
+# UPPER_YELLOW = np.array([80, 255, 255])
+
 LOWER_BLUE = np.array([90, 150, 100])
 UPPER_BLUE = np.array([105, 255, 255])
 
@@ -112,7 +123,7 @@ while True:
 
     # YELLOW MASK
     mask_yellow = cv2.inRange(hsv_frame, LOWER_YELLOW, UPPER_YELLOW)
-    kernel_yellow = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 25))
+    kernel_yellow = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 25)) # (3, 75)
     # kernel_yellow_2 = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 50))
 
     mask_yellow = cv2.morphologyEx(mask_yellow, cv2.MORPH_CLOSE, kernel_yellow)

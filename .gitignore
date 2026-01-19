@@ -3,6 +3,8 @@ yellow_pole.png
 yellow_pole_2.png
 yellow_pole_3.jpg
 output_with_bbox.mp4
+red_pole_2.jpg
+red_pole.png
 
 sauvc_test_hsv.py
 sauvc_test_lab.py
@@ -10,3 +12,6 @@ poles_yaw_lab.py
 test.py
 
 .DS_Store
+
+sauvc
+poles_dataset

@@ -1,0 +1,96 @@
+Underwater Pole Perception & Control Pipeline (SAUVC)
+
+This document describes the planned perception and control pipeline for
+underwater pole targeting. The system is developed incrementally, with
+a robust pixel-based yaw control method used initially, followed by a
+full 3D pose estimation pipeline using solvePnP.
+
+────────────────────────────────────────────────────
+1. Image Acquisition
+────────────────────────────────────────────────────
+- [x] Capture image / video frame from forward-facing camera
+
+────────────────────────────────────────────────────
+2. Coarse Detection (Object Localization)
+────────────────────────────────────────────────────
+- [ ] Run YOLO detector to obtain coarse pole bounding box (x, y, w, h)
+- [ ] Crop Region of Interest (ROI) using YOLO bounding box
+
+Note:
+YOLO is used only for coarse localization and false-positive rejection.
+Precise geometry is extracted using classical vision inside the ROI.
+
+────────────────────────────────────────────────────
+3. ROI Enhancement & Segmentation
+────────────────────────────────────────────────────
+- [x] Apply color enhancement on ROI
+      (MINMAX normalization + optional CLAHE)
+- [x] Convert enhanced ROI to HSV color space
+- [x] Apply HSV thresholding to obtain pole binary mask
+- [x] Apply morphological closing to connect fragmented pole pixels
+- [x] Remove small blobs and non-vertical noise
+      (area + aspect ratio filtering)
+
+────────────────────────────────────────────────────
+4. Pole Shaft Isolation
+────────────────────────────────────────────────────
+- [ ] Detect pole base region
+      (bottom widening / circular base detection)
+- [ ] Remove pole base pixels from binary mask
+- [ ] Generate shaft-only binary mask
+      (thin, vertically consistent pole region)
+
+────────────────────────────────────────────────────
+5. Shaft Geometry Extraction
+────────────────────────────────────────────────────
+- [ ] Extract pole shaft centerline
+      (row-wise centroid or PCA on shaft mask)
+- [ ] Detect shaft top point
+      (highest valid centerline pixel)
+- [ ] Detect shaft bottom point
+      (lowest valid shaft pixel)
+
+────────────────────────────────────────────────────
+6A. Pixel-Based Yaw Control (CURRENT METHOD)
+────────────────────────────────────────────────────
+This is the active control strategy used for initial testing and field runs.
+
+- [x] Compute image horizontal center
+- [x] Compute pole x-center from shaft centerline
+- [x] Calculate pixel yaw error
+      (pole_x − image_center_x)
+- [x] Convert pixel error to yaw angle using camera FOV
+- [x] Feed yaw error into yaw PID controller
+- [x] Maintain constant forward thrust
+- [x] Maintain fixed depth using depth PID
+
+Result:
+The AUV aligns itself with the pole and moves forward until contact.
+This method does not require depth or distance estimation and is robust
+for close-range interaction.
+
+────────────────────────────────────────────────────
+6B. Full 3D Pose Estimation (NEXT STAGE)
+────────────────────────────────────────────────────
+- [ ] Define 3D pole model points
+      (top & bottom points in real-world coordinates)
+- [ ] Form 2D–3D correspondences
+      (image shaft points ↔ pole model points)
+- [ ] Run solvePnP to estimate rotation vector (rvec)
+      and translation vector (tvec)
+- [ ] Convert rvec to rotation matrix / Euler angles
+- [ ] Obtain full 6-DoF pole pose in camera frame:
+      (X, Y, Z, roll, pitch, yaw)
+
+────────────────────────────────────────────────────
+7. Temporal Filtering
+────────────────────────────────────────────────────
+- [ ] Apply temporal filtering to pose estimates
+      (EMA / Kalman filter for stability)
+
+────────────────────────────────────────────────────
+8. Guidance & Control Integration
+────────────────────────────────────────────────────
+- [ ] Send yaw / pose estimates to guidance & control module
+- [ ] Switch between pixel-yaw mode and PnP-based pose mode
+      based on task requirements and distance to pole
